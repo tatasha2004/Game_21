@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Game_21
 {
     enum Ranks
     {
-        six = 6, seven, eight, nine, ten, Jack = 2, Queen, King, Ace = 11
+        Six = 6, Seven, Eight, Nine, Ten, Jack = 2, Queen, King, Ace = 11
     }
 
     enum Colors
     {
-        Spades, 
+        Spades,
         Hearts,
         Diamonds,
         Clubs
@@ -34,18 +30,27 @@ namespace Game_21
     {
         static void Main(string[] args)
         {
+            Colors[] cardColor = (Colors[])Enum.GetValues(typeof(Colors));
+            Ranks[] cardRank = (Ranks[])Enum.GetValues(typeof(Ranks));
+
+            int colorLength = cardColor.Length;
+            int rankLength = cardRank.Length;
+            int numberOfCards = colorLength * rankLength;
+
             Deck Deck = new Deck();
-            Deck.Cards = new Card[Enum.GetValues(typeof(Colors)).Length * Enum.GetValues(typeof(Ranks)).Length];
+            //Deck.Cards = new Card[Enum.GetValues(typeof(Colors)).Length * Enum.GetValues(typeof(Ranks)).Length];
+            Deck.Cards = new Card[numberOfCards];
 
-
-            for (int c = 0; c < Enum.GetValues(typeof(Colors)).Length; c++)
+            for (int c = 0; c < colorLength; c++)
             {
-                int i = c * Enum.GetValues(typeof(Ranks)).Length;
+                int i = c * rankLength;
 
-                for (int r = 0; r < Enum.GetValues(typeof(Ranks)).Length; r++)
+                for (int r = 0; r < rankLength; r++)
                 {
-                    Deck.Cards[i].Color = (Colors)Enum.GetValues(typeof(Colors)).GetValue(c);  // приведение типа к Enum
-                    Deck.Cards[i].Rank = (Ranks)Enum.GetValues(typeof(Ranks)).GetValue(r);
+                    /*Deck.Cards[i].Color = (Colors)Enum.GetValues(typeof(Colors)).GetValue(c);  // приведение типа к Enum
+                    Deck.Cards[i].Rank = (Ranks)Enum.GetValues(typeof(Ranks)).GetValue(r);*/
+                    Deck.Cards[i].Color = cardColor[c];  // приведение типа к Enum
+                    Deck.Cards[i].Rank = cardRank[r];
                     i++;
                 }
             };
@@ -59,35 +64,28 @@ namespace Game_21
                 Deck.Cards[i] = temp;
             }
 
-            //Вывод перемешенной колоды карт
-            /* Console.WriteLine("Вывод перемешенной колоды карт");
-             for (int z = 1; z <= 36; z++)
-             {
-                   Console.WriteLine("---index " + (z - 1) + " ---");
-                   Console.WriteLine(Deck.Cards[z - 1].Color);
-                   Console.WriteLine(Deck.Cards[z - 1].Rank);
-             }*/
-
             int scorePlayer = 0;
             int scorePC = 0;
             int winsPlayer = 0;
             int winsPC = 0;
-            int defaultQtyOfCartsPlayer = 2;
-            int defaultQtyOfCartsPC = 2;
-            int qtyOfCarts;
+            const int defaultQtyOfCardsPlayer = 2;
+            const int defaultQtyOfCardsPC = 2;
+            int qtyOfCards;
             string oneMore;
+            string selectFirstPlayer;
 
             Deck Player = new Deck();
-            Player.Cards = new Card[18];
+            Player.Cards = new Card[17];
             Deck PC = new Deck();
-            PC.Cards = new Card[18];
+            PC.Cards = new Card[17];
+
 
             Console.WriteLine("who receives first cards? You - enter Y, PC - enter N");
-            string selectFirstPlayer = Console.ReadLine();
+            selectFirstPlayer = Console.ReadLine();
 
             if (selectFirstPlayer == "Y" || selectFirstPlayer == "y")
             {
-                for (int i = 0; i < defaultQtyOfCartsPlayer; i++)
+                for (int i = 0; i < defaultQtyOfCardsPlayer; i++)
                 {
                     Player.Cards[i] = Deck.Cards[i];
                     scorePlayer += Convert.ToInt32(Player.Cards[i].Rank);
@@ -98,7 +96,7 @@ namespace Game_21
                 Console.WriteLine("***** Your score is: " + scorePlayer + " *****");
                 Console.WriteLine();
 
-                for (int i = 0; i < defaultQtyOfCartsPC; i++)
+                for (int i = 0; i < defaultQtyOfCardsPC; i++)
                 {
                     PC.Cards[i] = Deck.Cards[i + 1];
                     scorePC += Convert.ToInt32(PC.Cards[i].Rank);
@@ -115,115 +113,87 @@ namespace Game_21
                     winsPlayer++;
                 }
 
-                qtyOfCarts = defaultQtyOfCartsPlayer + defaultQtyOfCartsPC;
-
-                Console.WriteLine("????? Do you need one more cart? ????? Y/N");
-                oneMore = Console.ReadLine();
-
-                if (oneMore == "N" || oneMore == "n")
-                {
-                    while (scorePC <= 20)
-                    {
-                        Console.WriteLine("-----PC will get new cart------");
-                        PC.Cards[defaultQtyOfCartsPC + 1] = Deck.Cards[qtyOfCarts + 1];
-                        scorePC += Convert.ToInt32(PC.Cards[defaultQtyOfCartsPC + 1].Rank);
-                        Console.WriteLine("Your cart is:");
-                        Console.WriteLine(PC.Cards[defaultQtyOfCartsPC + 1].Color);
-                        Console.WriteLine(PC.Cards[defaultQtyOfCartsPC + 1].Rank);
-                        qtyOfCarts++;
-                    }
-                    Console.WriteLine();
-                    Console.WriteLine("***** PC score is: " + scorePC + " *****");
-                    Console.WriteLine();
-
-                    if (scorePC == 21)
-                    {
-                        Console.WriteLine("***** PC WONG! *****");
-                        winsPC++;
-                    }
-
-                    else if ((scorePlayer > 21 && scorePC > 21 && scorePlayer < scorePC) ||
-                             (scorePlayer < 21 && scorePC < 21 && scorePlayer > scorePC) ||
-                             (scorePlayer < 21 && scorePC > 21))
-                    {
-                        Console.WriteLine("***** YOU WONG! *****");
-                        winsPlayer++;
-                    }
-                    else
-                    {
-                        Console.WriteLine("***** PC WONG! *****");
-                        winsPC++;
-                    }
-                    Console.ReadLine();
-                }
-
-
-                if (oneMore == "Y" || oneMore == "y")
-                {
-                    Player.Cards[defaultQtyOfCartsPlayer + 1] = Deck.Cards[qtyOfCarts + 1];
-                    scorePlayer += Convert.ToInt32(Player.Cards[defaultQtyOfCartsPlayer + 1].Rank);
-                    Console.WriteLine("Your cart is:");
-                    Console.WriteLine(Player.Cards[defaultQtyOfCartsPlayer + 1].Color);
-                    Console.WriteLine(Player.Cards[defaultQtyOfCartsPlayer + 1].Rank);
-                    qtyOfCarts++;
-                }
-                Console.WriteLine();
-                Console.WriteLine("***** Your score is: " + scorePlayer + " *****");
-                Console.WriteLine();
-
-                if (scorePlayer == 21)
-                {
-                    Console.WriteLine("***** YOU WONG! *****");
-                    winsPlayer++;
-                }
                 else
                 {
-                    Console.WriteLine("????? Do you need one more cart? ????? Y/N");
-                    oneMore = Console.ReadLine();
-                }
+                    qtyOfCards = defaultQtyOfCardsPlayer + defaultQtyOfCardsPC;
 
-                if (oneMore == "N" || oneMore == "n")
-                {
-                    while (scorePC <= 20)
+                    do
                     {
-                        Console.WriteLine("-----PC will get new cart------");
-                        PC.Cards[defaultQtyOfCartsPC + 1] = Deck.Cards[qtyOfCarts + 1];
-                        scorePC += Convert.ToInt32(PC.Cards[defaultQtyOfCartsPC + 1].Rank);
-                        Console.WriteLine("Your cart is:");
-                        Console.WriteLine(PC.Cards[defaultQtyOfCartsPC + 1].Color);
-                        Console.WriteLine(PC.Cards[defaultQtyOfCartsPC + 1].Rank);
-                        qtyOfCarts++;
+                        Console.WriteLine("????? Do you need one more card? ????? Y/N");
+                        oneMore = Console.ReadLine();
                     }
-                    Console.WriteLine();
-                    Console.WriteLine("***** PC score is: " + scorePC + " *****");
-                    Console.WriteLine();
+                    while (oneMore == "N" || oneMore == "n");
 
-                    if (scorePC == 21)
+
+                    while (oneMore == "Y" || oneMore == "y")
                     {
-                        Console.WriteLine("***** PC WONG! *****");
-                        winsPC++;
+                        {
+                            Player.Cards[defaultQtyOfCardsPlayer + 1] = Deck.Cards[qtyOfCards + 1];
+                            scorePlayer += Convert.ToInt32(Player.Cards[defaultQtyOfCardsPlayer + 1].Rank);
+                            Console.WriteLine("Your card is:");
+                            Console.WriteLine(Player.Cards[defaultQtyOfCardsPlayer + 1].Color);
+                            Console.WriteLine(Player.Cards[defaultQtyOfCardsPlayer + 1].Rank);
+                            qtyOfCards++;
+                        }
+                        Console.WriteLine();
+                        Console.WriteLine("***** Your score is: " + scorePlayer + " *****");
+                        Console.WriteLine();
+
+                        if (scorePlayer == 21)
+                        {
+                            Console.WriteLine("***** YOU WONG! *****");
+                            winsPlayer++;
+                        }
+                        else
+                        {
+                            Console.WriteLine("????? Do you need one more card? ????? Y/N");
+                            oneMore = Console.ReadLine();
+                        }
                     }
 
-                    else if ((scorePlayer > 21 && scorePC > 21 && scorePlayer < scorePC) ||
-                             (scorePlayer < 21 && scorePC < 21 && scorePlayer > scorePC) ||
-                             (scorePlayer < 21 && scorePC > 21))
+                    while (oneMore == "N" || oneMore == "n")
                     {
-                        Console.WriteLine("***** YOU WONG! *****");
-                        winsPlayer++;
+                        while (scorePC <= 20)
+                        {
+                            Console.WriteLine("-----PC will get new card------");
+                            PC.Cards[defaultQtyOfCardsPC + 1] = Deck.Cards[qtyOfCards + 1];
+                            scorePC += Convert.ToInt32(PC.Cards[defaultQtyOfCardsPC + 1].Rank);
+                            Console.WriteLine("PC card is:");
+                            Console.WriteLine(PC.Cards[defaultQtyOfCardsPC + 1].Color);
+                            Console.WriteLine(PC.Cards[defaultQtyOfCardsPC + 1].Rank);
+                            qtyOfCards++;
+                        }
+                        Console.WriteLine();
+                        Console.WriteLine("***** PC score is: " + scorePC + " *****");
+                        Console.WriteLine();
+
+                        if (scorePC == 21)
+                        {
+                            Console.WriteLine("***** PC WONG! *****");
+                            winsPC++;
+                        }
+
+                        else if ((scorePlayer > 21 && scorePC > 21 && scorePlayer < scorePC) ||
+                                 (scorePlayer < 21 && scorePC < 21 && scorePlayer > scorePC) ||
+                                 (scorePlayer < 21 && scorePC > 21))
+                        {
+                            Console.WriteLine("***** YOU WONG! *****");
+                            winsPlayer++;
+                        }
+                        else
+                        {
+                            Console.WriteLine("***** PC WONG! *****");
+                            winsPC++;
+                        }
+                        Console.ReadLine();
                     }
-                    else
-                    {
-                        Console.WriteLine("***** PC WONG! *****");
-                        winsPC++;
-                    }
-                    Console.ReadLine();
                 }
             }
-      
+
             ///PC first
-            if (selectFirstPlayer == "N" || selectFirstPlayer == "n")
+            else
             {
-                for (int i = 0; i < defaultQtyOfCartsPC; i++)
+                for (int i = 0; i < defaultQtyOfCardsPC; i++)
                 {
                     PC.Cards[i] = Deck.Cards[i];
                     scorePC += Convert.ToInt32(PC.Cards[i].Rank);
@@ -234,7 +204,7 @@ namespace Game_21
                 Console.WriteLine("***** PC score is: " + scorePC + " *****");
                 Console.WriteLine();
 
-                for (int i = 0; i < defaultQtyOfCartsPlayer; i++)
+                for (int i = 0; i < defaultQtyOfCardsPlayer; i++)
                 {
                     Player.Cards[i] = Deck.Cards[i + 1];
                     scorePlayer += Convert.ToInt32(Player.Cards[i].Rank);
@@ -244,9 +214,6 @@ namespace Game_21
                 Console.WriteLine();
                 Console.WriteLine("***** Your score is: " + scorePlayer + " *****");
                 Console.WriteLine();
-                // }
-
-                qtyOfCarts = defaultQtyOfCartsPlayer + defaultQtyOfCartsPC;
 
                 if (scorePlayer == scorePC)
                 {
@@ -264,17 +231,18 @@ namespace Game_21
                     winsPC++;
                 }
 
-                else if (scorePC <= 20)
+                else
                 {
+                    qtyOfCards = defaultQtyOfCardsPlayer + defaultQtyOfCardsPC;
                     while (scorePC <= 20)
                     {
-                        Console.WriteLine("-----PC will get new cart------");
-                        PC.Cards[defaultQtyOfCartsPC + 1] = Deck.Cards[qtyOfCarts + 1];
-                        scorePC += Convert.ToInt32(PC.Cards[defaultQtyOfCartsPC + 1].Rank);
-                        Console.WriteLine("Your cart is:");
-                        Console.WriteLine(PC.Cards[defaultQtyOfCartsPC + 1].Color);
-                        Console.WriteLine(PC.Cards[defaultQtyOfCartsPC + 1].Rank);
-                        qtyOfCarts++;
+                        Console.WriteLine("-----PC will get new card------");
+                        PC.Cards[defaultQtyOfCardsPC + 1] = Deck.Cards[qtyOfCards + 1];
+                        scorePC += Convert.ToInt32(PC.Cards[defaultQtyOfCardsPC + 1].Rank);
+                        Console.WriteLine("Your card is:");
+                        Console.WriteLine(PC.Cards[defaultQtyOfCardsPC + 1].Color);
+                        Console.WriteLine(PC.Cards[defaultQtyOfCardsPC + 1].Rank);
+                        qtyOfCards++;
                     }
                     Console.WriteLine();
                     Console.WriteLine("***** PC score is: " + scorePC + " *****");
@@ -285,57 +253,47 @@ namespace Game_21
                         Console.WriteLine("***** PC WONG! *****");
                         winsPC++;
                     }
+
                     else
                     {
-                        Console.WriteLine("????? Do you need one more cart? ????? Y/N");
-                        oneMore = Console.ReadLine();
-
-                        if (oneMore == "N" || oneMore == "n")
+                        do
                         {
-                            if ((scorePlayer > 21 && scorePC > 21 && scorePlayer < scorePC) ||
-                                 (scorePlayer < 21 && scorePC < 21 && scorePlayer > scorePC) ||
-                                 (scorePlayer < 21 && scorePC > 21))
-                            {
-                                Console.WriteLine("***** YOU WONG! *****");
-                                winsPlayer++;
-                            }
-                            else
-                            {
-                                Console.WriteLine("***** PC WONG! *****");
-                                winsPC++;
-                            }
-                            Console.ReadLine();
-                        }
-                        if (oneMore == "Y" || oneMore == "y")
-
-                        {
-                            Player.Cards[defaultQtyOfCartsPlayer + 1] = Deck.Cards[qtyOfCarts + 1];
-                            scorePlayer += Convert.ToInt32(Player.Cards[defaultQtyOfCartsPlayer + 1].Rank);
-                            Console.WriteLine("Your cart is:");
-                            Console.WriteLine(Player.Cards[defaultQtyOfCartsPlayer + 1].Color);
-                            Console.WriteLine(Player.Cards[defaultQtyOfCartsPlayer + 1].Rank);
-                            qtyOfCarts++;
-                        }
-                        Console.WriteLine();
-                        Console.WriteLine("***** Your score is: " + scorePlayer + " *****");
-                        Console.WriteLine();
-
-                        if (scorePlayer == 21)
-                        {
-                            Console.WriteLine("***** YOU WONG! *****");
-                            winsPlayer++;
-                        }
-                        else
-                        {
-                            Console.WriteLine("????? Do you need one more cart? ????? Y/N");
+                            Console.WriteLine("????? Do you need one more card? ????? Y/N");
                             oneMore = Console.ReadLine();
                         }
+                        while (oneMore == "N" || oneMore == "n");
 
-                        if (oneMore == "N" || oneMore == "n")
+                        while (oneMore == "Y" || oneMore == "y")
+                        {
+                            {
+                                Player.Cards[defaultQtyOfCardsPlayer + 1] = Deck.Cards[qtyOfCards + 1];
+                                scorePlayer += Convert.ToInt32(Player.Cards[defaultQtyOfCardsPlayer + 1].Rank);
+                                Console.WriteLine("Your card is:");
+                                Console.WriteLine(Player.Cards[defaultQtyOfCardsPlayer + 1].Color);
+                                Console.WriteLine(Player.Cards[defaultQtyOfCardsPlayer + 1].Rank);
+                                qtyOfCards++;
+                            }
+                            Console.WriteLine();
+                            Console.WriteLine("***** Your score is: " + scorePlayer + " *****");
+                            Console.WriteLine();
+
+                            if (scorePlayer == 21)
+                            {
+                                Console.WriteLine("***** YOU WONG! *****");
+                                winsPlayer++;
+                            }
+                            else
+                            {
+                                Console.WriteLine("????? Do you need one more card? ????? Y/N");
+                                oneMore = Console.ReadLine();
+                            }
+                        }
+
+                        while (oneMore == "N" || oneMore == "n")
                         {
                             if ((scorePlayer > 21 && scorePC > 21 && scorePlayer < scorePC) ||
-                                 (scorePlayer < 21 && scorePC < 21 && scorePlayer > scorePC) ||
-                                 (scorePlayer < 21 && scorePC > 21))
+                                     (scorePlayer < 21 && scorePC < 21 && scorePlayer > scorePC) ||
+                                     (scorePlayer < 21 && scorePC > 21))
                             {
                                 Console.WriteLine("***** YOU WONG! *****");
                                 winsPlayer++;
@@ -347,30 +305,14 @@ namespace Game_21
                             }
                             Console.ReadLine();
                         }
-                        if (oneMore == "Y" || oneMore == "y")
 
-                        {
-                            Player.Cards[defaultQtyOfCartsPlayer + 1] = Deck.Cards[qtyOfCarts + 1];
-                            scorePlayer += Convert.ToInt32(Player.Cards[defaultQtyOfCartsPlayer + 1].Rank);
-                            Console.WriteLine("Your cart is:");
-                            Console.WriteLine(Player.Cards[defaultQtyOfCartsPlayer + 1].Color);
-                            Console.WriteLine(Player.Cards[defaultQtyOfCartsPlayer + 1].Rank);
-                            qtyOfCarts++;
-                        }
-                        Console.WriteLine();
-                        Console.WriteLine("***** Your score is: " + scorePlayer + " *****");
-                        Console.WriteLine();
-
-                        if (scorePlayer == 21)
-                        {
-                            Console.WriteLine("***** YOU WONG! *****");
-                            winsPlayer++;
-                        }
                     }
                 }
             }
         }
+
     }
 }
+
 
 
